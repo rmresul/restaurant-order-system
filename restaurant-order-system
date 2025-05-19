@@ -1,0 +1,158 @@
+import json
+import time
+
+records = []
+
+def welcome_screen():
+    print("===================================")
+    print(" Welcome to the Restaurant System ")
+    print("===================================")
+
+def main_menu():
+    print("\nMain Menu:")
+    print("1. Add new item")
+    print("2. View all items")
+    print("3. Search for item")
+    print("4. Update item")
+    print("5. Delete item")
+    print("6. Summary statistics")
+    print("7. Save to file")
+    print("8. Load from file")
+    print("9. Clear all data")
+    print("10. Help")
+    print("0. Exit")
+
+def add_item():
+    try:
+        item = {}
+        item['id'] = input("Enter item ID: ")
+        item['name'] = input("Enter item name: ")
+        item['price'] = float(input("Enter item price: "))
+        item['quantity'] = int(input("Enter item quantity: "))
+        records.append(item)
+        print("Item added successfully!")
+    except ValueError:
+        print("Invalid input. Please enter correct data types.")
+
+def view_all():
+    if not records:
+        print("No items to display.")
+    else:
+        print("\nAll Menu Items:")
+        for item in records:
+            print(item)
+
+def search_item():
+    key = input("Search by ID or name: ").lower()
+    for item in records:
+        if item['id'].lower() == key or item['name'].lower() == key:
+            print("Item found:", item)
+            return
+    print("Item not found.")
+
+def update_item():
+    id_to_update = input("Enter ID of item to update: ")
+    for item in records:
+        if item['id'] == id_to_update:
+            item['name'] = input("Enter new name: ")
+            item['price'] = float(input("Enter new price: "))
+            item['quantity'] = int(input("Enter new quantity: "))
+            print("Item updated.")
+            return
+    print("Item not found.")
+
+def delete_item():
+    id_to_delete = input("Enter ID of item to delete: ")
+    for item in records:
+        if item['id'] == id_to_delete:
+            records.remove(item)
+            print("Item deleted.")
+            return
+    print("Item not found.")
+
+def summary_statistics():
+    if not records:
+        print("No items to calculate stats.")
+        return
+    total_price = sum(item['price'] for item in records)
+    avg_price = total_price / len(records)
+    print(f"Total items: {len(records)}")
+    print(f"Average price: {avg_price:.2f}")
+
+def save_to_file():
+    with open("menu_data.json", "w") as f:
+        json.dump(records, f)
+    print("Data saved to file.")
+
+def load_from_file():
+    global records
+    try:
+        with open("menu_data.json", "r") as f:
+            records = json.load(f)
+        print("Data loaded from file.")
+    except FileNotFoundError:
+        print("File not found.")
+
+def clear_data():
+    confirm = input("Are you sure you want to delete all data? (yes/no): ")
+    if confirm.lower() == "yes":
+        records.clear()
+        print("All data cleared.")
+    else:
+        print("Action cancelled.")
+
+def recursive_count(index=0):
+    if index >= len(records):
+        return 0
+    return 1 + recursive_count(index + 1)
+
+def help_menu():
+    print("""
+Help / Instructions:
+- Use numbers from the menu to choose actions.
+- You can add, view, search, update, and delete items.
+- Don't forget to save your data to avoid loss!
+""")
+
+def ascii_art():
+    print("\nLoading", end="")
+    for _ in range(5):
+        print(".", end="", flush=True)
+        time.sleep(0.3)
+    print("\n")
+
+# Main loop
+ascii_art()
+welcome_screen()
+while True:
+    try:
+        main_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            add_item()
+        elif choice == "2":
+            view_all()
+        elif choice == "3":
+            search_item()
+        elif choice == "4":
+            update_item()
+        elif choice == "5":
+            delete_item()
+        elif choice == "6":
+            summary_statistics()
+        elif choice == "7":
+            save_to_file()
+        elif choice == "8":
+            load_from_file()
+        elif choice == "9":
+            clear_data()
+        elif choice == "10":
+            help_menu()
+        elif choice == "0":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+    except Exception as e:
+        print("Error:",e)
